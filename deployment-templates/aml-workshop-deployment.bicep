@@ -20,9 +20,12 @@ param acrName string = 'acr${replace(replace(resourceName, '-', ''),'_','')}'
 param workspaceName string = 'ws-${resourceName}'
 
 @description('Max number of nodes for the CPU-based cluster')
-param maxNodeCount int = 10
+param cpuMaxNodeCount int = 10
 
-@description('VM Size for the Cluster')
+@description('Max number of nodes for the GPU-based cluster')
+param gpuMaxNodeCount int = 10
+
+@description('VM Size for the CPU-based cluster')
 @allowed([
   'Standard_D1_v2'
   'Standard_D2_v2'
@@ -67,13 +70,6 @@ param maxNodeCount int = 10
   'Standard_D12'
   'Standard_D13'
   'Standard_D14'
-  'Standard_NV6'
-  'Standard_NV12'
-  'Standard_NV24'
-  'Standard_NC6s_v3'
-  'Standard_NC12s_v3'
-  'Standard_NC24rs_v3'
-  'Standard_NC24s_v3'
   'Standard_HB60rs'
   'Standard_F2s_v2'
   'Standard_F4s_v2'
@@ -111,26 +107,31 @@ param maxNodeCount int = 10
   'Standard_D32ds_v4'
   'Standard_D48ds_v4'
   'Standard_D64ds_v4'
-  'Standard_NC6'
-  'Standard_NC12'
-  'Standard_NC24'
   'Standard_HC44rs'
   'Standard_HB120rs_v2'
-  'Standard_NC24r'
-  'Standard_NC6_Promo'
-  'Standard_NC12_Promo'
-  'Standard_NC24_Promo'
-  'Standard_NC24r_Promo'
-  'Standard_ND40rs_v2'
-  'Standard_NV12s_v3'
-  'Standard_NV24s_v3'
-  'Standard_NV48s_v3'
   'Standard_H8'
   'Standard_H16'
   'Standard_H8m'
   'Standard_H16m'
   'Standard_H16r'
   'Standard_H16mr'
+])
+param cpuClusterVMSize string = 'Standard_DS12_v2'
+
+@description('VM Size for the GPU-based cluster')
+@allowed([
+  'Standard_NC6s_v3'
+  'Standard_NC12s_v3'
+  'Standard_NC24rs_v3'
+  'Standard_NC24s_v3'
+  'Standard_NC6'
+  'Standard_NC12'
+  'Standard_NC24'
+  'Standard_NC24r'
+  'Standard_NC6_Promo'
+  'Standard_NC12_Promo'
+  'Standard_NC24_Promo'
+  'Standard_NC24r_Promo'
   'Standard_ND96asr_v4'
   'Standard_NC4as_T4_v3'
   'Standard_NC8as_T4_v3'
@@ -141,7 +142,7 @@ param maxNodeCount int = 10
   'Standard_NC24rs_v2'
   'Standard_NC24s_v2'
 ])
-param clusterVMSize string = 'Standard_DS14_v2'
+param gpuClusterVMSize string = 'Standard_NC6'
 
 var storageSKU = 'Standard_LRS'
 var containerRegistrySku = 'Standard'
@@ -226,12 +227,32 @@ resource cpuCluster 'Microsoft.MachineLearningServices/workspaces/computes@2021-
     description: 'A compute cluster to be used for the workshop attendees'
     properties: {
       scaleSettings: {
-        maxNodeCount: maxNodeCount
+        maxNodeCount: cpuMaxNodeCount
         minNodeCount: 0
         nodeIdleTimeBeforeScaleDown: 'PT30M'
       }
       vmPriority: 'LowPriority'
-      vmSize: clusterVMSize
+      vmSize: cpuClusterVMSize
+    }
+  }
+}
+
+resource gpuCluster 'Microsoft.MachineLearningServices/workspaces/computes@2021-01-01' = {
+  name: '${machineLearningWorkspace.name}/gpu-cluster'
+  location: resourceGroup().location
+  tags: tags
+  properties: {
+    computeType: 'AmlCompute'
+    computeLocation: resourceGroup().location
+    description: 'A compute cluster to be used for the workshop attendees'
+    properties: {
+      scaleSettings: {
+        maxNodeCount: gpuMaxNodeCount
+        minNodeCount: 0
+        nodeIdleTimeBeforeScaleDown: 'PT30M'
+      }
+      vmPriority: 'LowPriority'
+      vmSize: gpuClusterVMSize
     }
   }
 }

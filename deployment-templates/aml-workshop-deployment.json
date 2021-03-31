@@ -50,16 +50,23 @@
         "description": "The name of the AML Workspace"
       }
     },
-    "maxNodeCount": {
+    "cpuMaxNodeCount": {
       "type": "int",
       "defaultValue": 10,
       "metadata": {
         "description": "Max number of nodes for the CPU-based cluster"
       }
     },
-    "clusterVMSize": {
+    "gpuMaxNodeCount": {
+      "type": "int",
+      "defaultValue": 10,
+      "metadata": {
+        "description": "Max number of nodes for the GPU-based cluster"
+      }
+    },
+    "cpuClusterVMSize": {
       "type": "string",
-      "defaultValue": "Standard_DS14_v2",
+      "defaultValue": "Standard_DS12_v2",
       "allowedValues": [
         "Standard_D1_v2",
         "Standard_D2_v2",
@@ -104,13 +111,6 @@
         "Standard_D12",
         "Standard_D13",
         "Standard_D14",
-        "Standard_NV6",
-        "Standard_NV12",
-        "Standard_NV24",
-        "Standard_NC6s_v3",
-        "Standard_NC12s_v3",
-        "Standard_NC24rs_v3",
-        "Standard_NC24s_v3",
         "Standard_HB60rs",
         "Standard_F2s_v2",
         "Standard_F4s_v2",
@@ -148,26 +148,35 @@
         "Standard_D32ds_v4",
         "Standard_D48ds_v4",
         "Standard_D64ds_v4",
-        "Standard_NC6",
-        "Standard_NC12",
-        "Standard_NC24",
         "Standard_HC44rs",
         "Standard_HB120rs_v2",
-        "Standard_NC24r",
-        "Standard_NC6_Promo",
-        "Standard_NC12_Promo",
-        "Standard_NC24_Promo",
-        "Standard_NC24r_Promo",
-        "Standard_ND40rs_v2",
-        "Standard_NV12s_v3",
-        "Standard_NV24s_v3",
-        "Standard_NV48s_v3",
         "Standard_H8",
         "Standard_H16",
         "Standard_H8m",
         "Standard_H16m",
         "Standard_H16r",
-        "Standard_H16mr",
+        "Standard_H16mr"
+      ],
+      "metadata": {
+        "description": "VM Size for the CPU-based cluster"
+      }
+    },
+    "gpuClusterVMSize": {
+      "type": "string",
+      "defaultValue": "Standard_NC6",
+      "allowedValues": [
+        "Standard_NC6s_v3",
+        "Standard_NC12s_v3",
+        "Standard_NC24rs_v3",
+        "Standard_NC24s_v3",
+        "Standard_NC6",
+        "Standard_NC12",
+        "Standard_NC24",
+        "Standard_NC24r",
+        "Standard_NC6_Promo",
+        "Standard_NC12_Promo",
+        "Standard_NC24_Promo",
+        "Standard_NC24r_Promo",
         "Standard_ND96asr_v4",
         "Standard_NC4as_T4_v3",
         "Standard_NC8as_T4_v3",
@@ -179,7 +188,7 @@
         "Standard_NC24s_v2"
       ],
       "metadata": {
-        "description": "VM Size for the Cluster"
+        "description": "VM Size for the GPU-based cluster"
       }
     }
   },
@@ -281,12 +290,36 @@
         "description": "A compute cluster to be used for the workshop attendees",
         "properties": {
           "scaleSettings": {
-            "maxNodeCount": "[parameters('maxNodeCount')]",
+            "maxNodeCount": "[parameters('cpuMaxNodeCount')]",
             "minNodeCount": 0,
             "nodeIdleTimeBeforeScaleDown": "PT30M"
           },
           "vmPriority": "LowPriority",
-          "vmSize": "[parameters('clusterVMSize')]"
+          "vmSize": "[parameters('cpuClusterVMSize')]"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.MachineLearningServices/workspaces', parameters('workspaceName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.MachineLearningServices/workspaces/computes",
+      "apiVersion": "2021-01-01",
+      "name": "[format('{0}/gpu-cluster', parameters('workspaceName'))]",
+      "location": "[resourceGroup().location]",
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "computeType": "AmlCompute",
+        "computeLocation": "[resourceGroup().location]",
+        "description": "A compute cluster to be used for the workshop attendees",
+        "properties": {
+          "scaleSettings": {
+            "maxNodeCount": "[parameters('gpuMaxNodeCount')]",
+            "minNodeCount": 0,
+            "nodeIdleTimeBeforeScaleDown": "PT30M"
+          },
+          "vmPriority": "LowPriority",
+          "vmSize": "[parameters('gpuClusterVMSize')]"
         }
       },
       "dependsOn": [
@@ -298,7 +331,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.3.126.58533",
-      "templateHash": "16689915365076520800"
+      "templateHash": "4333519323090111510"
     }
   }
 }
