@@ -1,0 +1,304 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "resourceName": {
+      "type": "string",
+      "metadata": {
+        "description": "A name to use as the base resource-name"
+      }
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "description": "Tags to apply to the Azure Resources"
+      }
+    },
+    "appInsightsName": {
+      "type": "string",
+      "defaultValue": "[format('ai-{0}', parameters('resourceName'))]",
+      "metadata": {
+        "description": "The name for the Application Insights workspace associated with the AML Workspace"
+      }
+    },
+    "storageAccountName": {
+      "type": "string",
+      "defaultValue": "[format('sa{0}', replace(replace(parameters('resourceName'), '-', ''), '_', ''))]",
+      "metadata": {
+        "description": "The name for the Storage Account associated with the AML Workspace"
+      }
+    },
+    "keyVaultName": {
+      "type": "string",
+      "defaultValue": "[format('kv-{0}', parameters('resourceName'))]",
+      "metadata": {
+        "description": "The name of the Key Vault associated with the AML Workspace"
+      }
+    },
+    "acrName": {
+      "type": "string",
+      "defaultValue": "[format('acr{0}', replace(replace(parameters('resourceName'), '-', ''), '_', ''))]",
+      "metadata": {
+        "description": "The name of the Container Registry associated with the AML Workspace"
+      }
+    },
+    "workspaceName": {
+      "type": "string",
+      "defaultValue": "[format('ws-{0}', parameters('resourceName'))]",
+      "metadata": {
+        "description": "The name of the AML Workspace"
+      }
+    },
+    "maxNodeCount": {
+      "type": "int",
+      "defaultValue": 10,
+      "metadata": {
+        "description": "Max number of nodes for the CPU-based cluster"
+      }
+    },
+    "clusterVMSize": {
+      "type": "string",
+      "defaultValue": "Standard_DS14_v2",
+      "allowedValues": [
+        "Standard_D1_v2",
+        "Standard_D2_v2",
+        "Standard_D3_v2",
+        "Standard_D4_v2",
+        "Standard_D11_v2",
+        "Standard_D12_v2",
+        "Standard_D13_v2",
+        "Standard_D14_v2",
+        "Standard_D15_v2",
+        "Standard_DS1_v2",
+        "Standard_DS2_v2",
+        "Standard_DS3_v2",
+        "Standard_DS4_v2",
+        "Standard_DS5_v2",
+        "Standard_DS11_v2",
+        "Standard_DS12_v2",
+        "Standard_DS13_v2",
+        "Standard_DS14_v2",
+        "Standard_DS15_v2",
+        "Standard_D2_v3",
+        "Standard_D4_v3",
+        "Standard_D8_v3",
+        "Standard_D16_v3",
+        "Standard_D32_v3",
+        "Standard_D64_v3",
+        "Standard_D2s_v3",
+        "Standard_D4s_v3",
+        "Standard_D8s_v3",
+        "Standard_D16s_v3",
+        "Standard_D32s_v3",
+        "Standard_D64s_v3",
+        "Standard_E2_v3",
+        "Standard_E4_v3",
+        "Standard_E8_v3",
+        "Standard_E16_v3",
+        "Standard_D1",
+        "Standard_D2",
+        "Standard_D3",
+        "Standard_D4",
+        "Standard_D11",
+        "Standard_D12",
+        "Standard_D13",
+        "Standard_D14",
+        "Standard_NV6",
+        "Standard_NV12",
+        "Standard_NV24",
+        "Standard_NC6s_v3",
+        "Standard_NC12s_v3",
+        "Standard_NC24rs_v3",
+        "Standard_NC24s_v3",
+        "Standard_HB60rs",
+        "Standard_F2s_v2",
+        "Standard_F4s_v2",
+        "Standard_F8s_v2",
+        "Standard_F16s_v2",
+        "Standard_F32s_v2",
+        "Standard_F64s_v2",
+        "Standard_F72s_v2",
+        "Standard_M8ms",
+        "Standard_M16ms",
+        "Standard_M32ls",
+        "Standard_M32ms",
+        "Standard_M32ts",
+        "Standard_M64ls",
+        "Standard_M64ms",
+        "Standard_M64s",
+        "Standard_M128ms",
+        "Standard_M128s",
+        "Standard_M64",
+        "Standard_M64m",
+        "Standard_M128",
+        "Standard_M128m",
+        "Standard_E2a_v4",
+        "Standard_E4a_v4",
+        "Standard_E8a_v4",
+        "Standard_E16a_v4",
+        "Standard_E32a_v4",
+        "Standard_E48a_v4",
+        "Standard_E64a_v4",
+        "Standard_E96a_v4",
+        "Standard_D2ds_v4",
+        "Standard_D4ds_v4",
+        "Standard_D8ds_v4",
+        "Standard_D16ds_v4",
+        "Standard_D32ds_v4",
+        "Standard_D48ds_v4",
+        "Standard_D64ds_v4",
+        "Standard_NC6",
+        "Standard_NC12",
+        "Standard_NC24",
+        "Standard_HC44rs",
+        "Standard_HB120rs_v2",
+        "Standard_NC24r",
+        "Standard_NC6_Promo",
+        "Standard_NC12_Promo",
+        "Standard_NC24_Promo",
+        "Standard_NC24r_Promo",
+        "Standard_ND40rs_v2",
+        "Standard_NV12s_v3",
+        "Standard_NV24s_v3",
+        "Standard_NV48s_v3",
+        "Standard_H8",
+        "Standard_H16",
+        "Standard_H8m",
+        "Standard_H16m",
+        "Standard_H16r",
+        "Standard_H16mr",
+        "Standard_ND96asr_v4",
+        "Standard_NC4as_T4_v3",
+        "Standard_NC8as_T4_v3",
+        "Standard_NC16as_T4_v3",
+        "Standard_NC64as_T4_v3",
+        "Standard_NC6s_v2",
+        "Standard_NC12s_v2",
+        "Standard_NC24rs_v2",
+        "Standard_NC24s_v2"
+      ],
+      "metadata": {
+        "description": "VM Size for the Cluster"
+      }
+    }
+  },
+  "functions": [],
+  "variables": {
+    "storageSKU": "Standard_LRS",
+    "containerRegistrySku": "Standard",
+    "keyVaultSKU": {
+      "name": "standard",
+      "family": "A"
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Insights/components",
+      "apiVersion": "2020-02-02-preview",
+      "name": "[parameters('appInsightsName')]",
+      "location": "[resourceGroup().location]",
+      "kind": "web",
+      "properties": {
+        "Application_Type": "web"
+      },
+      "tags": "[parameters('tags')]"
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2021-01-01",
+      "name": "[parameters('storageAccountName')]",
+      "kind": "StorageV2",
+      "location": "[resourceGroup().location]",
+      "tags": "[parameters('tags')]",
+      "sku": {
+        "name": "[variables('storageSKU')]"
+      },
+      "properties": {
+        "allowBlobPublicAccess": false
+      }
+    },
+    {
+      "type": "Microsoft.ContainerRegistry/registries",
+      "apiVersion": "2020-11-01-preview",
+      "name": "[parameters('acrName')]",
+      "location": "[resourceGroup().location]",
+      "sku": {
+        "name": "[variables('containerRegistrySku')]"
+      },
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "adminUserEnabled": true
+      }
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults",
+      "apiVersion": "2019-09-01",
+      "name": "[parameters('keyVaultName')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "tenantId": "[subscription().tenantId]",
+        "sku": "[variables('keyVaultSKU')]",
+        "accessPolicies": []
+      }
+    },
+    {
+      "type": "Microsoft.MachineLearningServices/workspaces",
+      "apiVersion": "2021-01-01",
+      "name": "[parameters('workspaceName')]",
+      "location": "[resourceGroup().location]",
+      "sku": {
+        "name": "basic",
+        "tier": "basic"
+      },
+      "properties": {
+        "friendlyName": "[parameters('workspaceName')]",
+        "storageAccount": "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]",
+        "keyVault": "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]",
+        "containerRegistry": "[resourceId('Microsoft.ContainerRegistry/registries', parameters('acrName'))]",
+        "applicationInsights": "[resourceId('Microsoft.Insights/components', parameters('appInsightsName'))]",
+        "hbiWorkspace": true
+      },
+      "identity": {
+        "type": "SystemAssigned"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Insights/components', parameters('appInsightsName'))]",
+        "[resourceId('Microsoft.ContainerRegistry/registries', parameters('acrName'))]",
+        "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]",
+        "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.MachineLearningServices/workspaces/computes",
+      "apiVersion": "2021-01-01",
+      "name": "[format('{0}/cpu-cluster', parameters('workspaceName'))]",
+      "location": "[resourceGroup().location]",
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "computeType": "AmlCompute",
+        "computeLocation": "[resourceGroup().location]",
+        "description": "A compute cluster to be used for the workshop attendees",
+        "properties": {
+          "scaleSettings": {
+            "maxNodeCount": "[parameters('maxNodeCount')]",
+            "minNodeCount": 0,
+            "nodeIdleTimeBeforeScaleDown": "PT30M"
+          },
+          "vmPriority": "LowPriority",
+          "vmSize": "[parameters('clusterVMSize')]"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.MachineLearningServices/workspaces', parameters('workspaceName'))]"
+      ]
+    }
+  ],
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.3.126.58533",
+      "templateHash": "16689915365076520800"
+    }
+  }
+}
