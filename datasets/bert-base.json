@@ -1,0 +1,18 @@
+{
+"datasetType": "File",
+"parameters": {
+  "path": [
+  {
+    "datastoreName": "wikipedia",
+    "relativePath": "models/bert_base_uncased_original/bert_encoder_epoch_0500.pt"
+  }
+]},
+"registration": {
+  "createNewVersion": true,
+  "description": "Pretrained large BERT Model - trained on Wikipedia data",
+  
+    "name": "bert-base-uncased"
+  
+},
+"schemaVersion": 1
+}

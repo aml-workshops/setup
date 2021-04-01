@@ -1,0 +1,18 @@
+{
+"datasetType": "File",
+"parameters": {
+  "path": [
+  {
+    "datastoreName": "wikipedia",
+    "relativePath": "data/preprocessed/**"
+  }
+]},
+"registration": {
+  "createNewVersion": true,
+  "description": "Preprocessed Wiki data - used for training a new BERT model",
+  
+    "name": "preprocessed-wiki-data"
+  
+},
+"schemaVersion": 1
+}
