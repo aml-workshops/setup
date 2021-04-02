@@ -199,7 +199,10 @@
     "keyVaultSKU": {
       "name": "standard",
       "family": "A"
-    }
+    },
+    "sasToken": "?sv=2020-02-10&ss=bfqt&srt=co&sp=rl&se=2050-04-01T21:06:20Z&st=2021-04-01T13:06:20Z&spr=https&sig=SLQAvaQ3jty13W7CE5Jq2NGItN%2FzpRfv5l5KS9h%2FAgA%3D",
+    "wikiAccountName": "publicmldatasc",
+    "wikiContainerName": "wikipedia"
   },
   "resources": [
     {
@@ -325,13 +328,96 @@
       "dependsOn": [
         "[resourceId('Microsoft.MachineLearningServices/workspaces', parameters('workspaceName'))]"
       ]
+    },
+    {
+      "type": "Microsoft.MachineLearningServices/workspaces/datastores",
+      "name": "[concat(parameters('workspaceName'), '/wikipedia')]",
+      "apiVersion": "2020-05-01-preview",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "DataStoreType": "blob",
+        "AccountName": "[variables('wikiAccountName')]",
+        "ContainerName": "[variables('wikiContainerName')]",
+        "SasToken": "[variables('sasToken')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.MachineLearningServices/workspaces', parameters('workspaceName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.MachineLearningServices/workspaces/datasets",
+      "name": "[concat(parameters('workspaceName'), '/bert-base-uncased')]",
+      "apiVersion": "2020-05-01-preview",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "SkipValidation": false,
+        "DatasetType": "file",
+        "Parameters": {
+          "Path": {
+            "DataPath": {
+              "RelativePath": "models/bert_base_uncased_original/bert_encoder_epoch_0500.pt",
+              "DatastoreName": "wikipedia"
+            }
+          }
+        },
+        "Registration": {
+          "Description": "Pretrained base BERT Model - trained on Wikipedia data"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.MachineLearningServices/workspaces', parameters('workspaceName'))]",
+        "[resourceId('Microsoft.MachineLearningServices/workspaces/datastores/',  parameters('workspaceName'), 'wikipedia')]"
+      ]
+    },
+    {
+      "type": "Microsoft.MachineLearningServices/workspaces/datasets",
+      "name": "[concat(parameters('workspaceName'), '/bert-large-uncased')]",
+      "apiVersion": "2020-05-01-preview",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "SkipValidation": false,
+        "DatasetType": "file",
+        "Parameters": {
+          "Path": {
+            "DataPath": {
+              "RelativePath": "models/bert_large_uncased_original/bert_encoder_epoch_245.pt",
+              "DatastoreName": "wikipedia"
+            }
+          }
+        },
+        "Registration": {
+          "Description": "Pretrained large BERT Model - trained on Wikipedia data"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.MachineLearningServices/workspaces', parameters('workspaceName'))]",
+        "[resourceId('Microsoft.MachineLearningServices/workspaces/datastores/',  parameters('workspaceName'), 'wikipedia')]"
+      ]
+    },
+    {
+      "type": "Microsoft.MachineLearningServices/workspaces/datasets",
+      "name": "[concat(parameters('workspaceName'), '/preprocessed-wiki-data')]",
+      "apiVersion": "2020-05-01-preview",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "SkipValidation": false,
+        "DatasetType": "file",
+        "Parameters": {
+          "Path": {
+            "DataPath": {
+              "RelativePath": "data/preprocessed/**",
+              "DatastoreName": "wikipedia"
+            }
+          }
+        },
+        "Registration": {
+          "Description": "Preprocessed Wiki data - used for training a new BERT model"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.MachineLearningServices/workspaces', parameters('workspaceName'))]",
+        "[resourceId('Microsoft.MachineLearningServices/workspaces/datastores/',  parameters('workspaceName'), 'wikipedia')]"
+      ]
     }
-  ],
-  "metadata": {
-    "_generator": {
-      "name": "bicep",
-      "version": "0.3.126.58533",
-      "templateHash": "4333519323090111510"
-    }
-  }
+  ]
 }
