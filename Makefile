@@ -11,7 +11,7 @@ datastore:
 		--account-name publicmldatasc \
 		--container-name wikipedia \
 		--name wikipedia \
-		--sas-token ?sv=2020-02-10&ss=bfqt&srt=co&sp=rl&se=2050-04-01T21:06:20Z&st=2021-04-01T13:06:20Z&spr=https&sig=SLQAvaQ3jty13W7CE5Jq2NGItN%2FzpRfv5l5KS9h%2FAgA%3D
+		--sas-token "?sv=2020-02-10&ss=bfqt&srt=co&sp=rl&se=2050-04-01T21:06:20Z&st=2021-04-01T13:06:20Z&spr=https&sig=SLQAvaQ3jty13W7CE5Jq2NGItN%2FzpRfv5l5KS9h%2FAgA%3D"
 
 dataset:
 	az ml dataset register \
